@@ -9,6 +9,7 @@
 #include "ui_mainwindow.h"
 #include <QPixmap>
 #include <QWidget>
+#include <QShortcut>
 #include <opencv2/imgproc.hpp>
 
 QLabel *label; // QLabelポインタのメンバ変数を追加
@@ -61,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent)
 //	 QLabel *label; // QLabelポインタのメンバ変数を追加
 	 label = new QLabel(this); // QLabelインスタンスを割り当てる
 	 label->setScaledContents(true); // QLabelのサイズに合わせて画像を拡大縮小する
-	 label->setGeometry(QRect(0, 0, 640, 480));
+//	 label->setGeometry(QRect(0, 0, 640, 480));
 	 label->setFixedSize(640, 480); // 固定サイズを設定
 	 label->setAlignment(Qt::AlignCenter); // 中央寄せ
 
@@ -78,7 +79,9 @@ MainWindow::MainWindow(QWidget *parent)
 	 //////////////////////////////////////////////////
 	 //Playボタンについて
 	 QPushButton *playButton = new QPushButton("Play",this);
-
+	 //Stopボタンについて
+	 QPushButton *stopButton = new QPushButton("Stop",this);
+//	 stopButton= setShortcut(Qt::Key_Escape);
 	 //////////////////////////////////////////////////////
 	 //これでウィジェットを中心におけます
 	 vmainLayout->addWidget(label, 0, Qt::AlignCenter);
@@ -87,21 +90,36 @@ MainWindow::MainWindow(QWidget *parent)
 	 centralWidget_again->setLayout(vmainLayout);
 	 setCentralWidget(centralWidget_again);
 	 connect(playButton, &QPushButton::clicked, this, &MainWindow::playVideo);
+	 connect(stopButton, &QPushButton::clicked, this, &MainWindow::stopVideo);
 //	 menuFile->addAction(playAction);
-	 vmainLayout->addWidget(playButton, 0, Qt::AlignCenter);
+	 hmainLayout->addWidget(playButton);
+	 hmainLayout->addWidget(stopButton);
+//	 vmainLayout->addWidget(playButton, 0, Qt::AlignCenter);
+	 vmainLayout->addLayout(hmainLayout);
 
-	 QAction *stopAction = new QAction(tr("&Stop"), this);
-	 stopAction->setShortcut(Qt::Key_Escape);
-	 stopAction->setStatusTip(tr("Stop the video"));
-	 connect(stopAction, &QAction::triggered, this, &MainWindow::stopVideo);
-	 menuFile->addAction(stopAction);
+//	 QAction *stopAction = new QAction(tr("&Stop"), this);
+//	 QAction *stopAction = new QAction(this);
+//
+//	 stopAction->setShortcut(Qt::Key_Escape);
+//	 stopAction->setStatusTip(tr("Stop the video"));
+//	 connect(stopAction, &QAction::triggered, this, &MainWindow::stopVideo);
+//	 menuFile->addAction(stopAction);
+//
+//	 menuBar->addMenu(menuFile);// ショートカットキーをウィンドウ全体に割り当てる
+	 QShortcut *startshortcut = new QShortcut(QKeySequence(Qt::Key_Escape), this);
+	 startshortcut->setContext(Qt::ApplicationShortcut);
+	 connect(startshortcut, &QShortcut::activated, this, &MainWindow::playVideo);
+	 //stop
+	 QShortcut *stopshortcut = new QShortcut(QKeySequence(Qt::Key_F1), this);
+	 stopshortcut->setContext(Qt::ApplicationShortcut);
+	 connect(stopshortcut, &QShortcut::activated, this, &MainWindow::stopVideo);
 
-	 menuBar->addMenu(menuFile);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+	 cap.release(); // カメラ/ビデオファイルを開放する
 }
 
 void MainWindow::updateFrame()
@@ -175,7 +193,7 @@ void MainWindow::openVideoFile()
 void MainWindow::stopVideo()
 {
 	 timer->stop();
-	 cap.release(); // カメラ/ビデオファイルを開放する
+//	 cap.release(); // カメラ/ビデオファイルを開放する
 }
 void MainWindow::playVideo()
 {
@@ -186,13 +204,16 @@ void MainWindow::playVideo()
 		  return; // 再生中は何もしない
 	 }
 
-	 // 最初のフレームを読み込んで表示する
+//	  最初のフレームを読み込んで表示する
 	 cap.read(frame);
 	 if (frame.empty()) {
 		  qDebug() << "End of video";
 		  return;
 	 }
-
+//	 // 最初のフレームを読み込んで表示する
+//	 if (frame.empty()) {
+//		  cap.read(frame);
+//	 }
 	 cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
 	 cv::resize(frame, frame, cv::Size(label->width(), label->height())); // フレームをリサイズする
 	 QImage image(frame.data, frame.cols, frame.rows, frame.step, QImage::Format_RGB888);
