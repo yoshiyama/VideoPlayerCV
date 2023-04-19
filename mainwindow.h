@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QLabel>
 #include <QTimer>
+#include <QFileDialog>
 #include <opencv2/opencv.hpp>
 
 QT_BEGIN_NAMESPACE
@@ -20,6 +21,12 @@ public:
 
 private slots:
     void updateFrame();
+	 void openVideoFile();
+//	 void on_actionOpen_triggered();
+	 void on_actionOpen_triggered();
+	 void playVideo();
+	 void stopVideo();
+//	 void setupActions();
 
 private:
     Ui::MainWindow *ui;
@@ -27,6 +34,6 @@ private:
     QTimer *timer;
     cv::VideoCapture cap;
     cv::Mat frame;
-    QLabel *label; // QLabelポインタのメンバ変数を追加
+//    QLabel *label; // QLabelポインタのメンバ変数を追加
 };
 #endif // MAINWINDOW_H

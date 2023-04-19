@@ -15,5 +15,8 @@ add_executable(VideoPlayer
     mainwindow.cpp
     mainwindow.h
 )
-
+if(MINGW)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows")
+endif()
 target_link_libraries(VideoPlayer PRIVATE Qt5::Widgets ${OpenCV_LIBS})
+
