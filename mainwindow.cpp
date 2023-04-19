@@ -22,18 +22,17 @@ MainWindow::MainWindow(QWidget *parent)
 
 	 //配置関係のオブジェクト
 	 QVBoxLayout *vmainLayout = new QVBoxLayout();
-	 QHBoxLayout *sideLayout = new QHBoxLayout();
+	 QHBoxLayout *hmainLayout = new QHBoxLayout();
 //	 QVBoxLayout *vmainLayout = new QVBoxLayout(centralWidget);
-	 //addWidget:ウィジェットをレイアウトに追加する.QVBoxLayoutのメソッド
-	 vmainLayout->addWidget(label, 0, Qt::AlignCenter);
+	 //addWidget:ウィジェットをレイアウトに追加する.QVBoxLayoutのメソッド.
+	 //QVBoxLayout:ウィジェットを縦に並べるレイアウト
+//	 vmainLayout->addWidget(label, 0, Qt::AlignCenter);
 
 	 //QWidgetクラスには、GUI要素の外観、大きさ、位置、配置などを定義するための多数のメソッドが用意されています。
 	 QWidget *centralWidget = new QWidget(this);
 	 //setCentralWidget:メインウィンドウの中央にウィジェットを設定する.QMainWindowのメソッド
 	 //一般的に、メソッドはアクションを実行するために使用され、プロパティはオブジェクトの状態を取得または設定するために使用されます。
 	 setCentralWidget(centralWidget);
-
-
 
 	 QMenuBar *menuBar = new QMenuBar(this);
 	 setMenuBar(menuBar); // メニューバーを設定する
@@ -84,7 +83,7 @@ MainWindow::MainWindow(QWidget *parent)
 	 //////////////////////////////////////////////////////
 	 //これでウィジェットを中心におけます
 	 vmainLayout->addWidget(label, 0, Qt::AlignCenter);
-	 vmainLayout->addWidget(playButton, 0, Qt::AlignCenter);
+//	 vmainLayout->addWidget(playButton, 0, Qt::AlignCenter);
 	 QWidget *centralWidget_again = new QWidget();
 	 centralWidget_again->setLayout(vmainLayout);
 	 setCentralWidget(centralWidget_again);
