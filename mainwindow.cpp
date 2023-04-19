@@ -14,6 +14,7 @@
 
 QLabel *label; // QLabelポインタのメンバ変数を追加
 QLabel *info_label; // QLabelポインタのメンバ変数を追加
+QLabel *fps_label; // QLabelポインタのメンバ変数を追加
 
 MainWindow::MainWindow(QWidget *parent)
 		  : QMainWindow(parent) {
@@ -130,15 +131,22 @@ void MainWindow::updateFrame()
         qDebug() << "End of video";
         return;
     }
+	 double fps = cap.get(cv::CAP_PROP_FPS);
 
 	 // 現在のフレーム番号を取得する
 	 int currentFrame = cap.get(cv::CAP_PROP_POS_FRAMES);
 	 // 総フレーム数を取得する
 	 int totalFrames = cap.get(cv::CAP_PROP_FRAME_COUNT);
 	 // フレーム番号の文字列を作成する
-	 QString frameText = QString("Frame %1 / %2").arg(currentFrame).arg(totalFrames);
+	 QString frameText = QString("Frame %1 / %2 FPS: %3").arg(currentFrame).arg(totalFrames).arg(fps);
 	 // ラベルにフレーム番号を表示する
 	 info_label->setText(frameText);
+
+//	 double fps = cap.get(cv::CAP_PROP_FPS);
+//	 QString fpsText = QString("FPS: %1").arg(fps);
+//	 fps_label->setText(fpsText);
+
+
 
     cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
 	 cv::resize(frame, frame, cv::Size(label->width(), label->height())); // フレームをリサイズする
@@ -184,6 +192,9 @@ void MainWindow::openVideoFile()
 				label->setPixmap(pixmap);
 //				ui->videoLabel->setPixmap(QPixmap::fromImage(image));
 		  }
+//		  double fps = cap.get(cv::CAP_PROP_FPS);
+//		  QString fpsText = QString("FPS: %1").arg(fps);
+//		  fps_label->setText(fpsText);
 
 //////////////////////////////////////////////////////////////
 		  QFileInfo fileInfo(fileName);
