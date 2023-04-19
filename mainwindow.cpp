@@ -12,6 +12,7 @@
 #include <opencv2/imgproc.hpp>
 
 QLabel *label; // QLabelポインタのメンバ変数を追加
+QLabel *info_label; // QLabelポインタのメンバ変数を追加
 
 MainWindow::MainWindow(QWidget *parent)
 		  : QMainWindow(parent) {
@@ -64,7 +65,8 @@ MainWindow::MainWindow(QWidget *parent)
 	 label->setFixedSize(640, 480); // 固定サイズを設定
 	 label->setAlignment(Qt::AlignCenter); // 中央寄せ
 
-
+	 info_label = new QLabel(this); // QLabelインスタンスを割り当てる
+	 vmainLayout->addWidget(info_label);
 	 // メインウィンドウのサイズを画像のサイズに合わせる
 	 //this:つまりMainWindowクラスのオブジェクト(インスタンス)を指す
 	 //親のオブジェクトにも
@@ -85,7 +87,6 @@ MainWindow::MainWindow(QWidget *parent)
 	 centralWidget_again->setLayout(vmainLayout);
 	 setCentralWidget(centralWidget_again);
 	 connect(playButton, &QPushButton::clicked, this, &MainWindow::playVideo);
-//	 connect(playAction, &QAction::triggered, this, &MainWindow::playVideo);
 //	 menuFile->addAction(playAction);
 	 vmainLayout->addWidget(playButton, 0, Qt::AlignCenter);
 
@@ -111,6 +112,15 @@ void MainWindow::updateFrame()
         qDebug() << "End of video";
         return;
     }
+
+	 // 現在のフレーム番号を取得する
+	 int currentFrame = cap.get(cv::CAP_PROP_POS_FRAMES);
+	 // 総フレーム数を取得する
+	 int totalFrames = cap.get(cv::CAP_PROP_FRAME_COUNT);
+	 // フレーム番号の文字列を作成する
+	 QString frameText = QString("Frame %1 / %2").arg(currentFrame).arg(totalFrames);
+	 // ラベルにフレーム番号を表示する
+	 info_label->setText(frameText);
 
     cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
 	 cv::resize(frame, frame, cv::Size(label->width(), label->height())); // フレームをリサイズする
