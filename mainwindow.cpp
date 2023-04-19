@@ -23,10 +23,6 @@ MainWindow::MainWindow(QWidget *parent)
 	 //配置関係のオブジェクト
 	 QVBoxLayout *vmainLayout = new QVBoxLayout();
 	 QHBoxLayout *hmainLayout = new QHBoxLayout();
-//	 QVBoxLayout *vmainLayout = new QVBoxLayout(centralWidget);
-	 //addWidget:ウィジェットをレイアウトに追加する.QVBoxLayoutのメソッド.
-	 //QVBoxLayout:ウィジェットを縦に並べるレイアウト
-//	 vmainLayout->addWidget(label, 0, Qt::AlignCenter);
 
 	 //QWidgetクラスには、GUI要素の外観、大きさ、位置、配置などを定義するための多数のメソッドが用意されています。
 	 QWidget *centralWidget = new QWidget(this);
@@ -35,19 +31,20 @@ MainWindow::MainWindow(QWidget *parent)
 	 setCentralWidget(centralWidget);
 
 	 QMenuBar *menuBar = new QMenuBar(this);
-	 setMenuBar(menuBar); // メニューバーを設定する
+	 setMenuBar(menuBar); //ウィンドウにメニューバーを設定する
 	 //QMenu:ポップアップメニュー
 	 QMenu *menuFile = menuBar->addMenu(tr("&File"));
 	 //QMenuオブジェクトは、メニューのコンテナを表します。メニューには、アクション（例えば、新規作成、開く、保存など）を追加することができます。アクションは、ユーザーがメニューを開いてクリックすることで、アプリケーション内の機能を実行することができます。
 //    timer->start(1000 / cap.get(cv::CAP_PROP_FPS));
 	 QAction *openAction = new QAction(tr("&Open"), this);
-//    QAction *openAction = new QAction(this);
 	 openAction->setShortcut(QKeySequence::Open);//操作
 	 openAction->setStatusTip(tr("Open a file"));//操作
+	 menuFile->addAction(openAction); // Fileメニューに追加する
 	 //this:つまりMainWindowクラスのオブジェクト(インスタンス)を指す
 	 //MAinWindow:アプリケーションのメインウィンドウを作成するために使用されることが
 	 connect(openAction, &QAction::triggered, this, &MainWindow::openVideoFile); // メニューアクションを接続する
-	 menuFile->addAction(openAction); // Fileメニューに追加する
+	 ////////////////////////////////////////
+
 //	 ui->menuFile->addAction(openAction); // Fileメニューに追加する
 	 // Quit アクションの追加
 	 QAction *quitAction = new QAction(tr("&Quit"), this);
@@ -162,8 +159,20 @@ void MainWindow::openVideoFile()
 				return;
 		  }
 //ここをstartにするか？stopにするかで動画が止まるか止まらないかが決まる
-		  timer->start(1000 / cap.get(cv::CAP_PROP_FPS));
-//		  timer->stop();
+//		  timer->start(1000 / cap.get(cv::CAP_PROP_FPS));
+		  timer->stop();
+		  // 最初のフレームを表示する
+		  cv::Mat frame;
+		  cap >> frame;
+		  if (!frame.empty()) {
+				cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
+				QImage image((uchar*) frame.data, frame.cols, frame.rows, QImage::Format_RGB888);
+				QPixmap pixmap = QPixmap::fromImage(image);
+				label->setPixmap(pixmap);
+//				ui->videoLabel->setPixmap(QPixmap::fromImage(image));
+		  }
+
+//////////////////////////////////////////////////////////////
 		  QFileInfo fileInfo(fileName);
 		  settings.setValue("LastPath", fileInfo.absolutePath());
 	 }
