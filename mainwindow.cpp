@@ -84,13 +84,6 @@ MainWindow::MainWindow(QWidget *parent)
 	 QWidget *centralWidget_again = new QWidget();
 	 centralWidget_again->setLayout(vmainLayout);
 	 setCentralWidget(centralWidget_again);
-//	 setMenuBar(menuBar); // メニューバーを設定する
-//	 QAction *playAction = new QAction(tr("&Play"), this);
-//	 playAction->setShortcut(Qt::Key_Space);
-//	 playAction->setStatusTip(tr("Play the video"));
-//	 connect(playButton, &QPushButton::clicked, this, &MainWindow::playVideo);
-//これだからupdateされるだけ
-//	 connect(playButton, &QPushButton::clicked, this, &MainWindow::updateFrame);
 	 connect(playButton, &QPushButton::clicked, this, &MainWindow::playVideo);
 //	 connect(playAction, &QAction::triggered, this, &MainWindow::playVideo);
 //	 menuFile->addAction(playAction);
@@ -127,17 +120,9 @@ void MainWindow::updateFrame()
     QPixmap pixmap = QPixmap::fromImage(image);
 	 // ラベルにQPixmapをセットする
     label->setPixmap(pixmap); // ui->labelの代わりにlabelを使う
-	 label->setGeometry(QRect(0, 0, 640, 480));
-	 label->setFixedSize(640, 480); // 固定サイズを設定
+//	 label->setGeometry(QRect(0, 0, 640, 480));
+//	 label->setFixedSize(640, 480); // 固定サイズを設定
 	 label->setScaledContents(true); // labelのサイズに動画のサイズに合わせる
-//	 label->setGeometry(QRect((width() - frame.cols) / 2, (height() - frame.rows) / 2, frame.cols, frame.rows));
-
-//	 label->setScaledContents(false); // labelのサイズに動画のサイズに合わせる
-//	 // labelのサイズを動画のサイズに合わせる
-////	 label->setFixedSize(frame.cols, frame.rows);
-//	 if (frame.cols > label->width() || frame.rows > label->height()) {
-//		  label->setPixmap(pixmap.scaled(label->size(), Qt::KeepAspectRatio, Qt::FastTransformation)); // labelのサイズをフレームのサイズに合わせる
-//	 }
 
 }
 void MainWindow::on_actionOpen_triggered()
@@ -203,8 +188,8 @@ void MainWindow::playVideo()
 	 QImage image(frame.data, frame.cols, frame.rows, frame.step, QImage::Format_RGB888);
 	 QPixmap pixmap = QPixmap::fromImage(image);
 	 label->setPixmap(pixmap);
-	 label->setGeometry(QRect(0, 0, 640, 480));
-	 label->setFixedSize(640, 480); // 固定サイズを設定
+//	 label->setGeometry(QRect(0, 0, 640, 480));
+//	 label->setFixedSize(640, 480); // 固定サイズを設定
 
 	 // 再生ボタンを押した時にタイマーを開始する
 	 timer->start(1000 / cap.get(cv::CAP_PROP_FPS));
