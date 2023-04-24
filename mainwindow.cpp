@@ -4,6 +4,7 @@
 #include <QSettings>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QFileInfo>
 #include <QSize>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -15,6 +16,7 @@
 QLabel *label; // QLabelポインタのメンバ変数を追加
 QLabel *info_label; // QLabelポインタのメンバ変数を追加
 QLabel *fps_label; // QLabelポインタのメンバ変数を追加
+QFileInfo *fileInfo;
 
 MainWindow::MainWindow(QWidget *parent)
 		  : QMainWindow(parent) {
@@ -138,7 +140,9 @@ void MainWindow::updateFrame()
 	 // 総フレーム数を取得する
 	 int totalFrames = cap.get(cv::CAP_PROP_FRAME_COUNT);
 	 // フレーム番号の文字列を作成する
-	 QString frameText = QString("Frame %1 / %2 FPS: %3").arg(currentFrame).arg(totalFrames).arg(fps);
+//	 QString frameText = QString("Frame %1 / %2 FPS: %3").arg(currentFrame).arg(totalFrames).arg(fps);
+	 // フレーム番号の文字列を作成する
+	 QString frameText = QString(" %1  Frame %2 / %3 FPS: %4").arg(fileInfo->fileName()).arg(currentFrame).arg(totalFrames).arg(fps);
 	 // ラベルにフレーム番号を表示する
 	 info_label->setText(frameText);
 
@@ -182,6 +186,8 @@ void MainWindow::openVideoFile()
 //ここをstartにするか？stopにするかで動画が止まるか止まらないかが決まる
 //		  timer->start(1000 / cap.get(cv::CAP_PROP_FPS));
 		  timer->stop();
+		  // ファイル情報を更新
+		  fileInfo = new QFileInfo(fileName);
 		  // 最初のフレームを表示する
 		  cv::Mat frame;
 		  cap >> frame;
