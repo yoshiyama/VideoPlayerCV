@@ -1,3 +1,3 @@
 # VideoPlayerCV
 This is GUI application for visualizing video.
-This can show Frame No and FPS.
+This not only displays the video, but also shows the file name of video, frame number, and fps.
