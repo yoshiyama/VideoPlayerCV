@@ -39,8 +39,6 @@ MainWindow::MainWindow(QWidget *parent)
 	 setMenuBar(menuBar); //ウィンドウにメニューバーを設定する
 	 //QMenu:ポップアップメニュー
 	 QMenu *menuFile = menuBar->addMenu(tr("&File"));
-	 //QMenuオブジェクトは、メニューのコンテナを表します。メニューには、アクション（例えば、新規作成、開く、保存など）を追加することができます。アクションは、ユーザーがメニューを開いてクリックすることで、アプリケーション内の機能を実行することができます。
-//    timer->start(1000 / cap.get(cv::CAP_PROP_FPS));
 	 QAction *openAction = new QAction(tr("&Open"), this);
 	 openAction->setShortcut(QKeySequence::Open);//操作
 	 openAction->setStatusTip(tr("Open a file"));//操作
@@ -67,6 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
 	 label->setScaledContents(true); // QLabelのサイズに合わせて画像を拡大縮小する
 //	 label->setGeometry(QRect(0, 0, 640, 480));
 	 label->setFixedSize(640, 480); // 固定サイズを設定
+//	 label->setFixedSize(1280, 960); // 固定サイズを設定
 	 label->setAlignment(Qt::AlignCenter); // 中央寄せ
 
 	 info_label = new QLabel(this); // QLabelインスタンスを割り当てる
@@ -74,7 +73,7 @@ MainWindow::MainWindow(QWidget *parent)
 	 // メインウィンドウのサイズを画像のサイズに合わせる
 	 //this:つまりMainWindowクラスのオブジェクト(インスタンス)を指す
 	 //親のオブジェクトにも
-	 timer = new QTimer(this);
+	 timer = new QTimer(this);//インスタンス化
 	 //timerオブジェクトのtimeoutシグナルをupdateFrameスロットに接続する
 	 //この connect 関数は、timer の timeout シグナルが発生したときに、MainWindow クラスの updateFrame スロットを呼び出すように設定しています。つまり、タイマーが動作している間、updateFrame 関数が定期的に呼び出され、ビデオフレームが更新され続けます。したがって、動画の画像が再生され続けます。
 	 connect(timer, &QTimer::timeout, this, &MainWindow::updateFrame);
@@ -127,18 +126,55 @@ MainWindow::~MainWindow()
 
 void MainWindow::updateFrame()
 {
+	 if (!cap.isOpened()) {
+		  return;
+	 }
     cap.read(frame);
-    if (frame.empty()) {
-        timer->stop();
-        qDebug() << "End of video";
-        return;
-    }
+	 // 現在のフレーム番号を取得する
+	 int currentFrame_now = cap.get(cv::CAP_PROP_POS_FRAMES);
+	 qDebug() << "今ここだよ %d" << currentFrame_now;
+	 qDebug() << "Frame updated";
+	 qDebug() << "次ここだよ %d" << currentFrame_now+1;
+////フレームを取得
+//	 ret, frame = cap.read();
+//
+////読み込めない場合エラー処理
+//	 if not ret:
+//	 	print("not capture");
+//	 	break;
+
+
+//    if (frame.empty()) {
+//        timer->stop();
+//        qDebug() << "End of video 1";
+//        return;
+//    }
+//	 if (frame.empty()) {
+//		  qDebug() << "End of video 1";
+//		  int totalFrames = cap.get(cv::CAP_PROP_FRAME_COUNT);
+//		  if (cap.get(cv::CAP_PROP_POS_FRAMES) >= totalFrames - 1) {
+//				timer->stop();
+//				qDebug() << "ストップした？";
+//		  } else {
+////				cap.set(cv::CAP_PROP_POS_FRAMES, 0); // 動画を最初から再生する
+//				cap.set(cv::CAP_PROP_POS_FRAMES, currentFrame_now+1); // 動画を最初から再生する
+//				cap.read(frame);
+//		  }
+//		  return;
+//	 }
+	 if (frame.empty()) {
+		  timer->stop();
+		  qDebug() << "End of video";
+		  return;
+	 }
 	 double fps = cap.get(cv::CAP_PROP_FPS);
 
 	 // 現在のフレーム番号を取得する
 	 int currentFrame = cap.get(cv::CAP_PROP_POS_FRAMES);
+	 qDebug() << "%d" << currentFrame;
 	 // 総フレーム数を取得する
 	 int totalFrames = cap.get(cv::CAP_PROP_FRAME_COUNT);
+	 qDebug() << "%d" << totalFrames;
 	 // フレーム番号の文字列を作成する
 //	 QString frameText = QString("Frame %1 / %2 FPS: %3").arg(currentFrame).arg(totalFrames).arg(fps);
 	 // フレーム番号の文字列を作成する
@@ -149,9 +185,6 @@ void MainWindow::updateFrame()
 //	 double fps = cap.get(cv::CAP_PROP_FPS);
 //	 QString fpsText = QString("FPS: %1").arg(fps);
 //	 fps_label->setText(fpsText);
-
-
-
     cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
 	 cv::resize(frame, frame, cv::Size(label->width(), label->height())); // フレームをリサイズする
 	 // フレームをQImageに変換する
@@ -178,6 +211,7 @@ void MainWindow::openVideoFile()
 																	 tr("Video Files (*.avi *.mp4 *.mkv);;All Files (*)"));
 
 	 if (!fileName.isEmpty()) {
+		  qDebug() << "File opened: " << fileName;
 		  cap.open(fileName.toStdString());
 		  if (!cap.isOpened()) {
 				qDebug() << "Error opening video file";
@@ -201,6 +235,8 @@ void MainWindow::openVideoFile()
 //		  double fps = cap.get(cv::CAP_PROP_FPS);
 //		  QString fpsText = QString("FPS: %1").arg(fps);
 //		  fps_label->setText(fpsText);
+//		  double fps = cap.get(cv::CAP_PROP_FPS);
+//		  timer->start(1000 / fps); // ここを修正する
 
 //////////////////////////////////////////////////////////////
 		  QFileInfo fileInfo(fileName);
@@ -224,7 +260,7 @@ void MainWindow::playVideo()
 //	  最初のフレームを読み込んで表示する
 	 cap.read(frame);
 	 if (frame.empty()) {
-		  qDebug() << "End of video";
+		  qDebug() << "End of video 2";
 		  return;
 	 }
 //	 // 最初のフレームを読み込んで表示する
@@ -241,5 +277,6 @@ void MainWindow::playVideo()
 
 	 // 再生ボタンを押した時にタイマーを開始する
 	 timer->start(1000 / cap.get(cv::CAP_PROP_FPS));
+	 qDebug() << "Timer started";
 	 // cap.release(); // カメラ/ビデオファイルを開放する
 }
